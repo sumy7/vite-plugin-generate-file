@@ -125,6 +125,7 @@ function generateFile(option: NormalizeGenerateFile) {
  * 配置调试服务器
  */
 function configureServer(server: ViteDevServer) {
+  // 配置文件列表路由
   server.middlewares.use('/__generate_file_list', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(
@@ -134,7 +135,8 @@ function configureServer(server: ViteDevServer) {
     )
     res.end()
   })
-  server.middlewares.use('/', (req, res, next) => {
+  // 监测是否访问了生成的文件
+  server.middlewares.use((req, res, next) => {
     const uri = new URL(req.originalUrl!, `http://${req.headers.host}`)
     const pathname = uri.pathname
 
@@ -175,6 +177,7 @@ function PluginGenerateFile(options: Options): Plugin {
     configResolved(resolvedConfig) {
       config = resolvedConfig
       distPath = resolve(config.root, config.build.outDir)
+
       if (Array.isArray(options)) {
         options.forEach((option) => {
           const simpleOption = normalizeOption(option)
@@ -186,6 +189,11 @@ function PluginGenerateFile(options: Options): Plugin {
       }
     },
     closeBundle() {
+      // 存在测试服务器时不需要生成文件
+      if (config.command === 'serve') {
+        return
+      }
+      // 按顺序生成文件
       for (const option of generateFileMap.values()) {
         generateFile(option)
       }
