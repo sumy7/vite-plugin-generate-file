@@ -1,15 +1,24 @@
 {
   "name": "vite-plugin-generate-file",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "description": "Generate extra file to dist folder.",
   "keywords": [
     "vite",
     "vue",
     "plugin",
-    "generate"
+    "generate",
+    "vite-plugin"
   ],
   "author": "SumyGG Sun <sumyggsun@gmail.com>",
+  "homepage": "https://github.com/sumy7/vite-plugin-generate-file#readme",
+  "bugs": {
+    "url": "https://github.com/sumy7/vite-plugin-generate-file/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumy7/vite-plugin-generate-file.git"
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
