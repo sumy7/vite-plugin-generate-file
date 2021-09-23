@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Generate File List</title>
+<body>
+<h1>Generate File List</h1>
+<div>
+    <ul>
+        <% Object.keys(generateFiles).forEach(key => { %>
+            <li><a href='<%= key %>'><%= generateFiles[key].output %></a></li>
+        <% }) %>
+    </ul>
+</div>
+</body>
+</html>
