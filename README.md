@@ -32,12 +32,13 @@ export default {
 
 Available options:
 
-| Name | Description | Options | Defaults |
-|------|-------------|--------- |----------|
-| `type` | Generate file format type. | `json`  `yaml` `template` | `json` |
-| `output` | Path to the output file the plugin will generate. It relative to `dist` folder.  | - | `./output.txt` |
-| `template` | Path to the template file. Support `ejs` format template. Available while `type` is `template`. | - | - |
-| `data` | Data to use in generated file or be passed in to the template.  | - | - |
+| Name          | Description                                                                                                 | Options                   | Defaults       |
+|---------------|-------------------------------------------------------------------------------------------------------------|---------------------------|----------------|
+| `type`        | Generate file format type.                                                                                  | `json`  `yaml` `template` | `json`         |
+| `output`      | Path to the output file the plugin will generate. It relative to `dist` folder.                             | -                         | `./output.txt` |
+| `template`    | Path to the template file. Support `ejs` format template. Available while `type` is `template`.             | -                         | -              |
+| `data`        | Data to use in generated file or be passed in to the template.                                              | -                         | -              |
+| `contentType` | Response Content-Type return from dev server. If empty it will be guessed from the `output` path extension. | -                         | -              |
 
 In dev mode, plugin will mock file by dev server. See [localhost:3000/__generate_file_list/](http://localhost:3000/__generate_file_list/) for more detail.
 

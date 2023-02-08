@@ -4,6 +4,7 @@ import { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import { green, yellow } from 'chalk'
 import yaml from 'js-yaml'
 import ejs from 'ejs'
+import * as mime from 'mime-types'
 import { ensureDirectoryExistence } from './utils'
 
 // @ts-ignore
@@ -22,6 +23,10 @@ export interface GenerateFile {
    * 默认json格式
    */
   type?: 'json' | 'yaml' | 'template'
+  /**
+   * devServer访问时返回的ContentType，默认根据output路径扩展名进行猜测
+   */
+  contentType?: string
   /**
    * 输出使用的模板文件，在type为template时有效，无默认值
    */
@@ -68,8 +73,13 @@ function normalizeOption(option: GenerateFile): NormalizeGenerateFile {
   }
   const fullPath = resolve(distPath, generateFileOption.output!)
   const relativePath = `/${relative(distPath, fullPath)}`
+  const contentType =
+    generateFileOption.contentType ||
+    mime.lookup(generateFileOption.output || '') ||
+    'text/plain'
   return {
     ...generateFileOption,
+    contentType,
     fullPath,
     relativePath,
   }
@@ -141,7 +151,11 @@ function configureServer(server: ViteDevServer) {
     const pathname = uri.pathname
 
     if (generateFileMap.has(pathname)) {
-      const content = generateContent(generateFileMap.get(pathname)!)
+      const option = generateFileMap.get(pathname)!
+      const content = generateContent(option)
+      res.writeHead(200, {
+        'Content-Type': option.contentType,
+      })
       res.write(content)
       res.end()
     } else {
