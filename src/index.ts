@@ -1,7 +1,7 @@
 import { readFileSync, writeFile } from 'fs'
 import { relative, resolve } from 'path'
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
-import { bold, green } from 'chalk'
+import pc from 'picocolors'
 import yaml from 'js-yaml'
 import ejs from 'ejs'
 import * as mime from 'mime-types'
@@ -127,7 +127,7 @@ function generateFile(option: NormalizeGenerateFile) {
       throw error
     }
 
-    console.log(`Generate File to ${green(filePath)}`)
+    console.log(`Generate File to ${pc.green(filePath)}`)
   })
 }
 
@@ -183,10 +183,10 @@ function configureServer(server: ViteDevServer) {
     _print()
 
     const colorUrl = (url: string) =>
-      green(url.replace(/:(\d+)\//, (_, port) => `:${bold(port)}/`))
+      pc.green(url.replace(/:(\d+)\//, (_, port) => `:${pc.bold(port)}/`))
     // eslint-disable-next-line no-console
     console.log(
-      `  ${green('➜')}  ${bold('Generate File List')}: ${colorUrl(
+      `  ${pc.green('➜')}  ${pc.bold('Generate File List')}: ${colorUrl(
         `${host}/__generate_file_list/`
       )}`
     )
