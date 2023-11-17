@@ -1,7 +1,7 @@
 import { readFileSync, writeFile } from 'fs'
 import { relative, resolve } from 'path'
-import { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
-import { green, yellow } from 'chalk'
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
+import { bold, green } from 'chalk'
 import yaml from 'js-yaml'
 import ejs from 'ejs'
 import * as mime from 'mime-types'
@@ -163,22 +163,33 @@ function configureServer(server: ViteDevServer) {
     }
   })
 
-  const _server = server
-  const _listen = server.httpServer!.listen
-  let port = config.server.port || 3000
-  let timer: any
+  const _print = server.printUrls
+  server.printUrls = () => {
+    let host = `${config.server.https ? 'https' : 'http'}://localhost:${
+      config.server.port || '80'
+    }`
 
-  _server.httpServer!.listen = function listenWrapper(...args: any) {
-    port ||= args[0]
-    clearTimeout(timer)
-    timer = setTimeout(() => {
-      console.log(
-        `  > Generate File List: ${yellow(
-          `http://localhost:${port}/__generate_file_list/`
-        )}\n`
-      )
-    }, 0)
-    return _listen.apply(this, args)
+    const url = server.resolvedUrls?.local[0]
+
+    if (url) {
+      try {
+        const u = new URL(url)
+        host = `${u.protocol}//${u.host}`
+      } catch (error) {
+        console.warn('Parse resolved url failed:', error)
+      }
+    }
+
+    _print()
+
+    const colorUrl = (url: string) =>
+      green(url.replace(/:(\d+)\//, (_, port) => `:${bold(port)}/`))
+    // eslint-disable-next-line no-console
+    console.log(
+      `  ${green('➜')}  ${bold('Generate File List')}: ${colorUrl(
+        `${host}/__generate_file_list/`
+      )}`
+    )
   }
 }
 

@@ -2,6 +2,9 @@ import generateFile from 'vite-plugin-generate-file'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  server: {
+    host: true,
+  },
   plugins: [
     generateFile([
       // json文件
@@ -10,8 +13,9 @@ export default defineConfig({
         output: 'jsonFile.json',
         data: {
           foo: 'hello',
-          bar: 'world'
-        }
-      }
-    ])]
+          bar: 'world',
+        },
+      },
+    ]),
+  ],
 })
