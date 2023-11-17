@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-generate-file",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "description": "Generate extra file to dist folder.",
   "keywords": [
