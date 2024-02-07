@@ -1,5 +1,7 @@
 # vite-plugin-generate-file
 
+[![npm](https://img.shields.io/npm/dt/vite-plugin-generate-file.svg)](https://www.npmjs.com/package/vite-plugin-generate-file)  [![npm](https://img.shields.io/npm/v/vite-plugin-generate-file.svg)](https://www.npmjs.com/package/vite-plugin-generate-file) [![npm](https://img.shields.io/npm/l/vite-plugin-generate-file.svg)](https://www.npmjs.com/package/vite-plugin-generate-file)
+
 **vite-plugin-generate-file** is a vite plugin which generate static file and write them to dist folder after packaging.
 
 ## Usage
