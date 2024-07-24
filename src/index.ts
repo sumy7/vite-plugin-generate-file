@@ -1,4 +1,4 @@
-import { readFileSync, writeFile } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import pc from 'picocolors'
@@ -121,13 +121,9 @@ function generateFile(option: NormalizeGenerateFile): void {
   const filePath = option.fullPath
   const fileContent = generateContent(option)
   ensureDirectoryExistence(filePath)
-  writeFile(filePath, fileContent, { flag: 'w' }, (error) => {
-    if (error) {
-      throw error
-    }
-
-    console.log(`Generate File to ${pc.green(filePath)}`)
-  })
+  // 使用同步模式写入文件
+  writeFileSync(filePath, fileContent, { flag: 'w' })
+  console.log(`Generate File to ${pc.green(filePath)}`)
 }
 
 /**
