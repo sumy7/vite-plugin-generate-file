@@ -1,5 +1,5 @@
 import { defineBuildConfig } from 'unbuild'
-// @ts-ignore
+// @ts-expect-error no types
 import { string } from 'rollup-plugin-string'
 
 export default defineBuildConfig({
@@ -20,7 +20,7 @@ export default defineBuildConfig({
         options.plugins.push(
           string({
             include: '**/*.ejs',
-          })
+          }),
         )
       }
     },

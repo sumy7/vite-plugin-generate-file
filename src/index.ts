@@ -1,5 +1,5 @@
-import { readFileSync, writeFile } from 'fs'
-import { relative, resolve } from 'path'
+import { readFileSync, writeFile } from 'node:fs'
+import { relative, resolve } from 'node:path'
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import pc from 'picocolors'
 import yaml from 'js-yaml'
@@ -7,7 +7,6 @@ import ejs from 'ejs'
 import * as mime from 'mime-types'
 import { ensureDirectoryExistence } from './utils'
 
-// @ts-ignore
 import listTemplate from './view.ejs'
 
 /**
@@ -73,10 +72,10 @@ function normalizeOption(option: GenerateFile): NormalizeGenerateFile {
   }
   const fullPath = resolve(distPath, generateFileOption.output!)
   const relativePath = `/${relative(distPath, fullPath)}`
-  const contentType =
-    generateFileOption.contentType ||
-    mime.lookup(generateFileOption.output || '') ||
-    'text/plain'
+  const contentType
+    = generateFileOption.contentType
+    || mime.lookup(generateFileOption.output || '')
+    || 'text/plain'
   return {
     ...generateFileOption,
     contentType,
@@ -118,7 +117,7 @@ function generateContent(option: NormalizeGenerateFile): string {
  * 生成文件
  * @param option 文件选项
  */
-function generateFile(option: NormalizeGenerateFile) {
+function generateFile(option: NormalizeGenerateFile): void {
   const filePath = option.fullPath
   const fileContent = generateContent(option)
   ensureDirectoryExistence(filePath)
@@ -134,14 +133,14 @@ function generateFile(option: NormalizeGenerateFile) {
 /**
  * 配置调试服务器
  */
-function configureServer(server: ViteDevServer) {
+function configureServer(server: ViteDevServer): void {
   // 配置文件列表路由
   server.middlewares.use('/__generate_file_list', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' })
     res.write(
       ejs.render(listTemplate, {
         generateFiles: Object.fromEntries(generateFileMap),
-      })
+      }),
     )
     res.end()
   })
@@ -158,7 +157,8 @@ function configureServer(server: ViteDevServer) {
       })
       res.write(content)
       res.end()
-    } else {
+    }
+    else {
       next()
     }
   })
@@ -175,20 +175,21 @@ function configureServer(server: ViteDevServer) {
       try {
         const u = new URL(url)
         host = `${u.protocol}//${u.host}`
-      } catch (error) {
+      }
+      catch (error) {
         console.warn('Parse resolved url failed:', error)
       }
     }
 
     _print()
 
-    const colorUrl = (url: string) =>
+    const colorUrl = (url: string): string =>
       pc.green(url.replace(/:(\d+)\//, (_, port) => `:${pc.bold(port)}/`))
-    // eslint-disable-next-line no-console
+
     console.log(
       `  ${pc.green('➜')}  ${pc.bold('Generate File List')}: ${colorUrl(
-        `${host}/__generate_file_list/`
-      )}`
+        `${host}/__generate_file_list/`,
+      )}`,
     )
   }
 }
@@ -208,7 +209,8 @@ function PluginGenerateFile(options: Options): Plugin {
           const simpleOption = normalizeOption(option)
           generateFileMap.set(simpleOption.relativePath, simpleOption)
         })
-      } else {
+      }
+      else {
         const simpleOption = normalizeOption(options)
         generateFileMap.set(simpleOption.relativePath, simpleOption)
       }

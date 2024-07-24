@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'fs'
+import path from 'node:path'
+import fs from 'node:fs'
 
 /**
  * 根据路径，递归创建文件夹
@@ -7,7 +7,7 @@ import fs from 'fs'
  *
  * @param filePath 文件路径
  */
-export function ensureDirectoryExistence(filePath: string) {
+export function ensureDirectoryExistence(filePath: string): void {
   const dirname = path.dirname(filePath)
   if (fs.existsSync(dirname)) {
     return
