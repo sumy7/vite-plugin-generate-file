@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import generateFile from 'vite-plugin-generate-file'
 import { defineConfig } from 'vite'
 
@@ -15,6 +16,18 @@ export default defineConfig({
           foo: 'hello',
           bar: 'world',
         },
+      },
+      // raw
+      {
+        type: 'raw',
+        output: 'rawFile.txt',
+        data: 'hello world',
+      },
+      // raw Buffer
+      {
+        type: 'raw',
+        output: 'rawFileBuffer.txt',
+        data: Buffer.from('hello world'),
       },
     ]),
   ],

@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
+import { Buffer } from 'node:buffer'
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import pc from 'picocolors'
 import yaml from 'js-yaml'
@@ -18,10 +19,15 @@ export interface GenerateFile {
    */
   output?: string
   /**
-   * 文件输出格式，json-将data转换成JSON格式输出，yaml-将data转换成yaml格式输出，template-使用自定义模板，
+   * 文件输出格式：
+   * - json-将data转换成JSON格式输出
+   * - yaml-将data转换成yaml格式输出
+   * - template-使用自定义模板
+   * - raw-原样输出
+   *
    * 默认json格式
    */
-  type?: 'json' | 'yaml' | 'template'
+  type?: 'json' | 'yaml' | 'template' | 'raw'
   /**
    * devServer访问时返回的ContentType，默认根据output路径扩展名进行猜测
    */
@@ -33,7 +39,7 @@ export interface GenerateFile {
   /**
    * 输出使用的data
    */
-  data?: Record<string, any>
+  data?: Record<string, any> | Buffer | string
 }
 
 /**
@@ -88,29 +94,40 @@ function normalizeOption(option: GenerateFile): NormalizeGenerateFile {
  * 获取生成的文件内容
  * @param option 生成文件选项
  */
-function generateContent(option: NormalizeGenerateFile): string {
+function generateContent(option: NormalizeGenerateFile): Buffer {
   if (!option.type) {
-    return ''
+    return Buffer.from('', 'utf-8')
   }
   if (option.type === 'json') {
     if (option.data) {
-      return JSON.stringify(option.data)
+      return Buffer.from(JSON.stringify(option.data), 'utf-8')
     }
-    return ''
+    return Buffer.from('', 'utf-8')
   }
   if (option.type === 'yaml') {
     if (option.data) {
-      return yaml.dump(option.data)
+      return Buffer.from(yaml.dump(option.data), 'utf-8')
     }
-    return ''
+    return Buffer.from('', 'utf-8')
   }
   if (option.type === 'template') {
     const templatePath = resolve(config.root, option.template!)
     const templateContent = readFileSync(templatePath, { encoding: 'utf8' })
-    return ejs.render(templateContent, option.data)
+    return Buffer.from(ejs.render(templateContent, typeof option.data === 'object' && option.data !== null ? option.data : {}), 'utf-8')
+  }
+  if (option.type === 'raw') {
+    if (option.data) {
+      if (Buffer.isBuffer(option.data)) {
+        return option.data
+      }
+      if (typeof option.data === 'string') {
+        return Buffer.from(option.data, 'utf-8')
+      }
+    }
+    return Buffer.from('', 'utf-8')
   }
   console.warn(`Unknown type [${option.type}]`)
-  return ''
+  return Buffer.from('', 'utf-8')
 }
 
 /**
