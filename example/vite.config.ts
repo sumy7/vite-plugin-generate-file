@@ -3,6 +3,7 @@ import generateFile from 'vite-plugin-generate-file'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  base: '/the-base',
   server: {
     host: true,
   },
@@ -21,13 +22,13 @@ export default defineConfig({
       {
         type: 'raw',
         output: 'rawFile.txt',
-        data: 'hello world',
+        data: 'hello rawFile',
       },
       // raw Buffer
       {
         type: 'raw',
         output: 'rawFileBuffer.txt',
-        data: Buffer.from('hello world'),
+        data: Buffer.from('hello rawFileBuffer'),
       },
     ]),
   ],

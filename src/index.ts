@@ -6,7 +6,7 @@ import pc from 'picocolors'
 import yaml from 'js-yaml'
 import ejs from 'ejs'
 import * as mime from 'mime-types'
-import { ensureDirectoryExistence } from './utils'
+import { ensureDirectoryExistence, trimBasePath } from './utils'
 
 import listTemplate from './view.ejs'
 
@@ -161,9 +161,11 @@ function configureServer(server: ViteDevServer): void {
   server.middlewares.use((req, res, next) => {
     const uri = new URL(req.originalUrl!, `http://${req.headers.host}`)
     const pathname = uri.pathname
+    const base = server.config.base || '/'
+    const trimmedPathname = trimBasePath(pathname, base)
 
-    if (generateFileMap.has(pathname)) {
-      const option = generateFileMap.get(pathname)!
+    if (generateFileMap.has(pathname) || generateFileMap.has(trimmedPathname)) {
+      const option = generateFileMap.get(pathname)! || generateFileMap.get(trimmedPathname)!
       const content = generateContent(option)
       res.writeHead(200, {
         'Content-Type': option.contentType,
