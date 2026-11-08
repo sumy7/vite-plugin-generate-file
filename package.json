@@ -2,7 +2,6 @@
   "name": "vite-plugin-generate-file",
   "type": "module",
   "version": "0.3.1",
-  "packageManager": "pnpm@9.5.0",
   "description": "Generate extra file to dist folder.",
   "author": "SumyGG Sun <sumyggsun@gmail.com>",
   "license": "MIT",
@@ -23,60 +22,65 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./dist/index.d.ts"
-      ]
-    }
-  },
+  "types": "dist/index.d.mts",
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  },
   "scripts": {
-    "build": "unbuild",
-    "dev": "unbuild --stub",
+    "dev": "tsdown --watch --ignore-watch examples",
+    "build": "tsdown",
+    "build:example": "tsdown && vite build examples/basic",
+    "play": "vite examples/basic",
+    "preview": "vite preview examples/basic",
     "lint": "eslint .",
-    "prepublishOnly": "nr build",
+    "lint:fix": "eslint . --fix",
+    "prepare": "tsdown",
+    "prepublishOnly": "tsdown",
     "release": "bumpp && npm publish",
-    "start": "esno src/index.ts",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "tsdown && vitest run --config vitest.config.e2e.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit --project examples/basic/tsconfig.json"
+  },
+  "peerDependencies": {
+    "vite": "^8.3.6"
   },
   "dependencies": {
-    "ejs": "^3.1.9",
+    "ejs": "^3.1.10",
     "js-yaml": "^4.1.0",
     "mime-types": "^2.1.35",
     "picocolors": "^1.0.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.23.0",
-    "@antfu/ni": "^0.22.0",
-    "@antfu/utils": "^0.7.10",
-    "@types/ejs": "^3.1.0",
-    "@types/js-yaml": "^4.0.3",
-    "@types/mime-types": "^2.1.1",
-    "@types/node": "^20.14.12",
-    "bumpp": "^9.4.1",
-    "eslint": "^9.7.0",
-    "esno": "^4.7.0",
-    "rollup-plugin-string": "^3.0.0",
-    "typescript": "^5.2.2",
-    "unbuild": "^2.0.0",
-    "vite": "^5.3.4",
-    "vitest": "^2.0.3"
+    "@antfu/eslint-config": "^10.0.0",
+    "@types/ejs": "^3.1.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mime-types": "^2.1.4",
+    "@types/node": "^26.6.6",
+    "bumpp": "^12.3.0",
+    "eslint": "^10.14.0",
+    "tsdown": "^0.23.7",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   },
   "volta": {
-    "node": "18.20.4"
+    "node": "24.12.0"
   },
   "publishConfig": {
     "access": "public",

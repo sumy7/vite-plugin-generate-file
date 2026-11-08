@@ -23,7 +23,7 @@ Install:
 npm add vite-plugin-generate-file -D
 ```
 
-> Since vite-plugin-generate-file@v0.1.0, Vite v3.1 or above is required.
+Requires Vite `^8.3.6` and Node.js `^22.18.0 || ^24.11.0 || >=26.0.0`.
 
 Add the plugin to your `vite.config.ts`:
 
@@ -68,24 +68,24 @@ During development, generated files are served by middleware without being writt
 
 Generated files are available both at their root-relative paths and under the configured Vite `base` prefix.
 
-After a production build, the files are written to the configured output directory.
+After a successful production build, the files are written to the configured output directory. Preview serves these files from disk. Builds with `build.write: false` do not write generated files.
 
 ## Development
 
-```bash
-pnpm install
-pnpm dev          # Generate development stubs
-pnpm exec vitest run
-pnpm typecheck
-pnpm lint
-pnpm build        # Build ESM, CommonJS, and TypeScript declarations
-```
+Use Node.js 24.12.0 (see `.nvmrc`) and pnpm 12.18.0, then run `pnpm install`.
 
-## Credits
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Watch and rebuild the plugin. |
+| `pnpm play` | Start the example at `/generate-file/`. |
+| `pnpm build` | Build ESM, CommonJS, and TypeScript declarations. |
+| `pnpm build:example` | Build the plugin and example. |
+| `pnpm preview` | Preview the built example at `/generate-file/`. |
+| `pnpm lint` / `pnpm typecheck` | Check formatting and types. |
+| `pnpm test` | Run unit and integration tests. |
+| `pnpm test:e2e` | Build the plugin and test package exports, builds, and preview over HTTP. |
 
-This plugin was inspired
-by [Alicevia/vite-plugin-generate-config-into-dist](https://github.com/fed/webpack-version-file)
-and [antfu/vite-plugin-inspect](https://github.com/antfu/vite-plugin-inspect).
+The example in `examples/basic` demonstrates JSON, YAML, EJS templates, raw strings, and Buffers. Test fixtures are stored under `node_modules/.cache/vite-plugin-generate-file/tests`.
 
 ## License
 

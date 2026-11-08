@@ -1,26 +1,12 @@
+import { mkdirSync } from 'node:fs'
 import path from 'node:path'
-import fs from 'node:fs'
 
-/**
- * 根据路径，递归创建文件夹
- * https://stackoverflow.com/a/34509653/3671444
- *
- * @param filePath 文件路径
- */
+/** Create the parent directory for an output file. */
 export function ensureDirectoryExistence(filePath: string): void {
-  const dirname = path.dirname(filePath)
-  if (fs.existsSync(dirname)) {
-    return
-  }
-  ensureDirectoryExistence(dirname)
-  fs.mkdirSync(dirname)
+  mkdirSync(path.dirname(filePath), { recursive: true })
 }
 
-/**
- * 去除文件路径的base部分
- * @param filename 文件路径
- * @param base base路径
- */
+/** Strip Vite's base prefix from a request pathname. */
 export function trimBasePath(filename: string, base: string): string {
   if (!base || base === '/') {
     return filename
