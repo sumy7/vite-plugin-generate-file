@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "esnext",
     "lib": ["esnext", "DOM"],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
-    "resolveJsonModule": true,
     "declaration": true,
+    "esModuleInterop": true
   },
-  "include": ["src"],
+  "include": ["src", "test", "vitest.config.ts"],
   "exclude": ["node_modules", "build", "dist", "example", "rollup.config.js"]
 }

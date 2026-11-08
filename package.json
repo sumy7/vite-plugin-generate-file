@@ -2,8 +2,18 @@
   "name": "vite-plugin-generate-file",
   "type": "module",
   "version": "0.3.1",
-  "license": "MIT",
+  "packageManager": "pnpm@9.5.0",
   "description": "Generate extra file to dist folder.",
+  "author": "SumyGG Sun <sumyggsun@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/sumy7/vite-plugin-generate-file#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sumy7/vite-plugin-generate-file.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sumy7/vite-plugin-generate-file/issues"
+  },
   "keywords": [
     "vite",
     "vue",
@@ -11,15 +21,6 @@
     "generate",
     "vite-plugin"
   ],
-  "author": "SumyGG Sun <sumyggsun@gmail.com>",
-  "homepage": "https://github.com/sumy7/vite-plugin-generate-file#readme",
-  "bugs": {
-    "url": "https://github.com/sumy7/vite-plugin-generate-file/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sumy7/vite-plugin-generate-file.git"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -74,7 +75,6 @@
     "vite": "^5.3.4",
     "vitest": "^2.0.3"
   },
-  "packageManager": "pnpm@9.5.0",
   "volta": {
     "node": "18.20.4"
   },

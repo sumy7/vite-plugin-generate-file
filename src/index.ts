@@ -53,23 +53,10 @@ interface NormalizeGenerateFile extends GenerateFile {
 export type Options = GenerateFile | GenerateFile[]
 
 /**
- * 解析后的全局配置项
- */
-let config: ResolvedConfig
-/**
- * 文件生成根路径
- */
-let distPath: string
-/**
- * 文件生成配置，相同路径保留最后一个
- */
-const generateFileMap = new Map<string, NormalizeGenerateFile>()
-
-/**
  * 参数默认值
  * @param option 参数
  */
-function normalizeOption(option: GenerateFile): NormalizeGenerateFile {
+function normalizeOption(option: GenerateFile, distPath: string): NormalizeGenerateFile {
   const generateFileOption: GenerateFile = {
     output: './output.txt',
     type: 'json',
@@ -80,8 +67,8 @@ function normalizeOption(option: GenerateFile): NormalizeGenerateFile {
   const relativePath = `/${relative(distPath, fullPath)}`
   const contentType
     = generateFileOption.contentType
-    || mime.lookup(generateFileOption.output || '')
-    || 'text/plain'
+      || mime.lookup(generateFileOption.output || '')
+      || 'text/plain'
   return {
     ...generateFileOption,
     contentType,
@@ -94,7 +81,7 @@ function normalizeOption(option: GenerateFile): NormalizeGenerateFile {
  * 获取生成的文件内容
  * @param option 生成文件选项
  */
-function generateContent(option: NormalizeGenerateFile): Buffer {
+function generateContent(option: NormalizeGenerateFile, root: string): Buffer {
   if (!option.type) {
     return Buffer.from('', 'utf-8')
   }
@@ -111,7 +98,7 @@ function generateContent(option: NormalizeGenerateFile): Buffer {
     return Buffer.from('', 'utf-8')
   }
   if (option.type === 'template') {
-    const templatePath = resolve(config.root, option.template!)
+    const templatePath = resolve(root, option.template!)
     const templateContent = readFileSync(templatePath, { encoding: 'utf8' })
     return Buffer.from(ejs.render(templateContent, typeof option.data === 'object' && option.data !== null ? option.data : {}), 'utf-8')
   }
@@ -134,9 +121,9 @@ function generateContent(option: NormalizeGenerateFile): Buffer {
  * 生成文件
  * @param option 文件选项
  */
-function generateFile(option: NormalizeGenerateFile): void {
+function generateFile(option: NormalizeGenerateFile, root: string): void {
   const filePath = option.fullPath
-  const fileContent = generateContent(option)
+  const fileContent = generateContent(option, root)
   ensureDirectoryExistence(filePath)
   // 使用同步模式写入文件
   writeFileSync(filePath, fileContent, { flag: 'w' })
@@ -146,7 +133,7 @@ function generateFile(option: NormalizeGenerateFile): void {
 /**
  * 配置调试服务器
  */
-function configureServer(server: ViteDevServer): void {
+function configureServer(server: ViteDevServer, generateFileMap: Map<string, NormalizeGenerateFile>): void {
   // 配置文件列表路由
   server.middlewares.use('/__generate_file_list', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' })
@@ -166,7 +153,7 @@ function configureServer(server: ViteDevServer): void {
 
     if (generateFileMap.has(pathname) || generateFileMap.has(trimmedPathname)) {
       const option = generateFileMap.get(pathname)! || generateFileMap.get(trimmedPathname)!
-      const content = generateContent(option)
+      const content = generateContent(option, server.config.root)
       res.writeHead(200, {
         'Content-Type': option.contentType,
       })
@@ -180,8 +167,8 @@ function configureServer(server: ViteDevServer): void {
 
   const _print = server.printUrls
   server.printUrls = () => {
-    let host = `${config.server.https ? 'https' : 'http'}://localhost:${
-      config.server.port || '80'
+    let host = `${server.config.server.https ? 'https' : 'http'}://localhost:${
+      server.config.server.port || '80'
     }`
 
     const url = server.resolvedUrls?.local[0]
@@ -212,21 +199,29 @@ function configureServer(server: ViteDevServer): void {
 /**
  * 插件入口
  */
-function PluginGenerateFile(options: Options): Plugin {
+function PluginGenerateFile(options?: Options): Plugin {
+  let config: ResolvedConfig
+  const generateFileMap = new Map<string, NormalizeGenerateFile>()
+
   return {
     name: 'vite-plugin-generate-file',
     configResolved(resolvedConfig) {
       config = resolvedConfig
-      distPath = resolve(config.root, config.build.outDir)
+      const distPath = resolve(config.root, config.build.outDir)
+      generateFileMap.clear()
+
+      if (options === undefined) {
+        return
+      }
 
       if (Array.isArray(options)) {
         options.forEach((option) => {
-          const simpleOption = normalizeOption(option)
+          const simpleOption = normalizeOption(option, distPath)
           generateFileMap.set(simpleOption.relativePath, simpleOption)
         })
       }
       else {
-        const simpleOption = normalizeOption(options)
+        const simpleOption = normalizeOption(options, distPath)
         generateFileMap.set(simpleOption.relativePath, simpleOption)
       }
     },
@@ -237,10 +232,10 @@ function PluginGenerateFile(options: Options): Plugin {
       }
       // 按顺序生成文件
       for (const option of generateFileMap.values()) {
-        generateFile(option)
+        generateFile(option, config.root)
       }
     },
-    configureServer,
+    configureServer: server => configureServer(server, generateFileMap),
   }
 }
 

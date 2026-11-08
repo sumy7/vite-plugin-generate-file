@@ -4,6 +4,9 @@
   <a href="https://npmjs.com/package/vite-plugin-generate-file">
     <img src="https://img.shields.io/npm/v/vite-plugin-generate-file?style=flat-square&colorA=564341&colorB=EDED91" alt="npm version" />
   </a>
+  <a href="https://npmjs.com/package/vite-plugin-generate-file">
+    <img src="https://img.shields.io/npm/types/vite-plugin-generate-file?style=flat-square&colorA=564341&colorB=EDED91" alt="TypeScript definitions" />
+  </a>
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square&colorA=564341&colorB=EDED91" alt="license" />
   <a href="https://npmcharts.com/compare/vite-plugin-generate-file?minimal=true"><img src="https://img.shields.io/npm/dm/vite-plugin-generate-file.svg?style=flat-square&colorA=564341&colorB=EDED91" alt="downloads" /></a>
 </p>
@@ -47,6 +50,8 @@ export default {
 
 Pass a file configuration object or an array of configurations to `generateFile`:
 
+Calling `generateFile()`, `generateFile(undefined)`, or `generateFile([])` generates no files. An explicit object such as `generateFile({})` uses the defaults below.
+
 | Name | Description | Options | Defaults |
 | --- | --- | --- | --- |
 | `type` | Format of the generated file. | `json` `yaml` `template` `raw` | `json` |
@@ -64,6 +69,17 @@ During development, generated files are served by middleware without being writt
 Generated files are available both at their root-relative paths and under the configured Vite `base` prefix.
 
 After a production build, the files are written to the configured output directory.
+
+## Development
+
+```bash
+pnpm install
+pnpm dev          # Generate development stubs
+pnpm exec vitest run
+pnpm typecheck
+pnpm lint
+pnpm build        # Build ESM, CommonJS, and TypeScript declarations
+```
 
 ## Credits
 
